@@ -1,5 +1,5 @@
-https://waifu.zoneplay.vn/play -O ./waifu +*.waifu.zoneplay.vn/* -v
-File generated automatically on Thu, 14 Aug 2025 18:48:22, do NOT edit
+https://waifu.zoneplay.vn -O ./waifu +*.waifu.zoneplay.vn/* -v
+File generated automatically on Thu, 14 Aug 2025 19:39:25, do NOT edit
 
 To update a mirror, just launch httrack without any parameters
 The existing cache will be used (and modified)

